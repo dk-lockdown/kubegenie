@@ -3,7 +3,6 @@ package sshutil
 import (
 	"bufio"
 	"fmt"
-	"github.com/dk-lockdown/kubegenie/pkg/util/runtime"
 	"io"
 	"io/ioutil"
 	"os"
@@ -20,6 +19,7 @@ import (
 
 import (
 	"github.com/dk-lockdown/kubegenie/pkg/util/log"
+	"github.com/dk-lockdown/kubegenie/pkg/util/runtime"
 )
 
 const (

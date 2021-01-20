@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package workflow
+package genie
 
 import (
 	"fmt"
@@ -39,9 +39,6 @@ type RunnerOptions struct {
 	SkipPhases []string
 }
 
-// RunData defines the data shared among all the phases included in the workflow, that is any type.
-type RunData = interface{}
-
 // Runner implements management of composable kubeadm workflows.
 type Runner struct {
 	// Options that regulate the runner behavior.
@@ -52,12 +49,7 @@ type Runner struct {
 
 	// runDataInitializer defines a function that creates the runtime data shared
 	// among all the phases included in the workflow
-	runDataInitializer func(*cobra.Command, []string) (RunData, error)
-
-	// runData is part of the internal state of the runner and it is used for implementing
-	// a singleton in the InitData methods (thus avoiding to initialize data
-	// more than one time)
-	runData RunData
+	runDataInitializer func(*cobra.Command, []string) (*KubeGenie, error)
 
 	// runCmd is part of the internal state of the runner and it is used to track the
 	// command that will trigger the runner (only if the runner is BindToCommand).
@@ -71,6 +63,8 @@ type Runner struct {
 	// a list of wrappers to phases composing the workflow with contextual
 	// information supporting phase execution.
 	phaseRunners []*phaseRunner
+
+	genie *KubeGenie
 }
 
 // phaseRunner provides a wrapper to a Phase with the addition of a set
@@ -170,22 +164,22 @@ func (e *Runner) computePhaseRunFlags() (map[string]bool, error) {
 // SetDataInitializer allows to setup a function that initialize the runtime data shared
 // among all the phases included in the workflow.
 // The method will receive in input the cmd that triggers the Runner (only if the runner is BindToCommand)
-func (e *Runner) SetDataInitializer(builder func(cmd *cobra.Command, args []string) (RunData, error)) {
+func (e *Runner) SetDataInitializer(builder func(cmd *cobra.Command, args []string) (*KubeGenie, error)) {
 	e.runDataInitializer = builder
 }
 
 // InitData triggers the creation of runtime data shared among all the phases included in the workflow.
 // This action can be executed explicitly out, when it is necessary to get the RunData
 // before actually executing Run, or implicitly when invoking Run.
-func (e *Runner) InitData(args []string) (RunData, error) {
-	if e.runData == nil && e.runDataInitializer != nil {
+func (e *Runner) InitData(args []string) (*KubeGenie, error) {
+	if e.genie == nil && e.runDataInitializer != nil {
 		var err error
-		if e.runData, err = e.runDataInitializer(e.runCmd, args); err != nil {
+		if e.genie, err = e.runDataInitializer(e.runCmd, args); err != nil {
 			return nil, err
 		}
 	}
 
-	return e.runData, nil
+	return e.genie, nil
 }
 
 // Run the kubeadm composable kubeadm workflows.
@@ -198,9 +192,8 @@ func (e *Runner) Run(args []string) error {
 		return err
 	}
 
-	// builds the runner data
-	var data RunData
-	if data, err = e.InitData(args); err != nil {
+	var genie *KubeGenie
+	if genie, err = e.InitData(args); err != nil {
 		return err
 	}
 
@@ -219,7 +212,7 @@ func (e *Runner) Run(args []string) error {
 		// If the phase defines a condition to be checked before executing the phase action.
 		if p.RunIf != nil {
 			// Check the condition and returns if the condition isn't satisfied (or fails)
-			ok, err := p.RunIf(data)
+			ok, err := p.RunIf(genie)
 			if err != nil {
 				return errors.Wrapf(err, "error execution run condition for phase %s", p.generatedName)
 			}
@@ -231,7 +224,7 @@ func (e *Runner) Run(args []string) error {
 
 		// Runs the phase action (if defined)
 		if p.Run != nil {
-			if err := p.Run(data); err != nil {
+			if err := p.Run(genie); err != nil {
 				return errors.Wrapf(err, "error execution phase %s", p.generatedName)
 			}
 		}

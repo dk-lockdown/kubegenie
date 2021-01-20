@@ -14,13 +14,6 @@ import (
 	"github.com/dk-lockdown/kubegenie/pkg/util/sshutil"
 )
 
-var (
-	clusterStatus = map[string]string{
-		"joinMasterCmd": "",
-		"joinWorkerCmd": "",
-	}
-)
-
 type KubeGenie struct {
 	config *v1alpha1.InitConfiguration
 
@@ -33,8 +26,8 @@ type Node struct {
 	SSHCommand *sshutil.SSHCommand
 }
 
-func NewKubeGenie(config *v1alpha1.InitConfiguration) KubeGenie {
-	genie := KubeGenie{config: config}
+func NewKubeGenie(config *v1alpha1.InitConfiguration) *KubeGenie {
+	genie := &KubeGenie{config: config}
 
 	masters := make([]Node, 0, len(config.Masters))
 	workers := make([]Node, 0, len(config.Workers))
@@ -65,7 +58,7 @@ func NewKubeGenie(config *v1alpha1.InitConfiguration) KubeGenie {
 	return genie
 }
 
-func (genie KubeGenie) executeOnAllNodes(task Task) {
+func (genie *KubeGenie) executeOnAllNodes(task Task) {
 	var wg sync.WaitGroup
 	for i, _ := range genie.Masters {
 		wg.Add(1)
@@ -78,7 +71,7 @@ func (genie KubeGenie) executeOnAllNodes(task Task) {
 	wg.Wait()
 }
 
-func (genie KubeGenie) executeOnMasterNodes(task Task) {
+func (genie *KubeGenie) executeOnMasterNodes(task Task) {
 	var wg sync.WaitGroup
 	for i, _ := range genie.Masters {
 		wg.Add(1)
@@ -87,7 +80,7 @@ func (genie KubeGenie) executeOnMasterNodes(task Task) {
 	wg.Wait()
 }
 
-func (genie KubeGenie) executeOnWorkerNodes(task Task) {
+func (genie *KubeGenie) executeOnWorkerNodes(task Task) {
 	var wg sync.WaitGroup
 	for i, _ := range genie.Workers {
 		wg.Add(1)
@@ -96,13 +89,13 @@ func (genie KubeGenie) executeOnWorkerNodes(task Task) {
 	wg.Wait()
 }
 
-func (genie KubeGenie) executeOnMaster0(task Task) {
+func (genie *KubeGenie) executeOnMaster0(task Task) {
 	if err := task(genie.Masters[0], genie.config); err != nil {
 		log.Error(err)
 	}
 }
 
-func (genie KubeGenie) executeOnMastersExceptMaster0(task Task) {
+func (genie *KubeGenie) executeOnMastersExceptMaster0(task Task) {
 	if len(genie.Masters) > 1 {
 		var wg sync.WaitGroup
 		leftMasters := genie.Masters[1:]
@@ -116,7 +109,7 @@ func (genie KubeGenie) executeOnMastersExceptMaster0(task Task) {
 
 type Task func(node Node, config *v1alpha1.InitConfiguration) error
 
-func (genie KubeGenie) executeTask(wg *sync.WaitGroup, node Node, task Task) {
+func (genie *KubeGenie) executeTask(wg *sync.WaitGroup, node Node, task Task) {
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Fprintf(os.Stderr, "%s goroutine panic: %v\n%s\n",

@@ -1,8 +1,9 @@
-package genie
+package init
 
 import (
 	"encoding/base64"
 	"fmt"
+	"github.com/dk-lockdown/kubegenie/pkg/genie"
 )
 
 import (
@@ -33,7 +34,7 @@ func generateKubeadmConfig(config *v1alpha1.InitConfiguration) (string, error) {
 	})
 }
 
-func initKubeadmConfig(node Node, config *v1alpha1.InitConfiguration) error {
+func InitKubeadmConfig(node genie.Node, config *v1alpha1.InitConfiguration) error {
 	kubeadmCfg, err := generateKubeadmConfig(config)
 	if err != nil {
 		return err
@@ -41,8 +42,4 @@ func initKubeadmConfig(node Node, config *v1alpha1.InitConfiguration) error {
 	kubeadmCfgBase64 := base64.StdEncoding.EncodeToString([]byte(kubeadmCfg))
 	_, err2 := node.SSHCommand.Exec(fmt.Sprintf("sudo -E /bin/sh -c \"mkdir -p /etc/kubernetes && echo %s | base64 -d > /etc/kubernetes/kubeadm-config.yaml\"", kubeadmCfgBase64))
 	return err2
-}
-
-func (genie KubeGenie) InitKubeadmConfig() {
-	genie.executeOnMaster0(initKubeadmConfig)
 }

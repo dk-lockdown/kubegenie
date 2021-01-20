@@ -1,15 +1,16 @@
-package genie
+package init
 
 import (
 	"encoding/base64"
 	"fmt"
-	"github.com/dk-lockdown/kubegenie/pkg/tmpl"
+	"github.com/dk-lockdown/kubegenie/pkg/genie"
 	"strings"
 )
 
 import (
 	"github.com/dk-lockdown/kubegenie/app/api/v1alpha1"
 	"github.com/dk-lockdown/kubegenie/pkg/shell"
+	"github.com/dk-lockdown/kubegenie/pkg/tmpl"
 	"github.com/dk-lockdown/kubegenie/pkg/util"
 )
 
@@ -35,7 +36,7 @@ func generateDockerDaemonJsonConfig(config *v1alpha1.InitConfiguration) (string,
 	})
 }
 
-func installDocker(node Node, config *v1alpha1.InitConfiguration) error {
+func InstallDocker(node genie.Node, config *v1alpha1.InitConfiguration) error {
 	if err := node.SSHCommand.ExecShell(shell.DockerInstallShell); err != nil {
 		return err
 	}
@@ -49,8 +50,4 @@ func installDocker(node Node, config *v1alpha1.InitConfiguration) error {
 		return err
 	}
 	return nil
-}
-
-func (genie KubeGenie) InstallDocker() {
-	genie.executeOnAllNodes(installDocker)
 }

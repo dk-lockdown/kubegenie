@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package workflow
+package genie
 
 import (
 	"github.com/spf13/cobra"
@@ -56,12 +56,12 @@ type Phase struct {
 	// Run defines a function implementing the phase action.
 	// It is recommended to implent type assertion, e.g. using golang type switch,
 	// for validating the RunData type.
-	Run func(data RunData) error
+	Run func(genie *KubeGenie) error
 
 	// RunIf define a function that implements a condition that should be checked
 	// before executing the phase action.
 	// If this function return nil, the phase action is always executed.
-	RunIf func(data RunData) (bool, error)
+	RunIf func(genie *KubeGenie) (bool, error)
 
 	// InheritFlags defines the list of flags that the cobra command generated for this phase should Inherit
 	// from local flags defined in the parent command / or additional flags defined in the phase runner.

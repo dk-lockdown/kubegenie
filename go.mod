@@ -14,5 +14,6 @@ require (
 	github.com/tmc/scp v0.0.0-20170824174625-f7b48647feef
 	go.uber.org/zap v1.10.0
 	golang.org/x/crypto v0.0.0-20201002170205-7f63de1d35b0
+	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
 	k8s.io/apimachinery v0.19.4
 )

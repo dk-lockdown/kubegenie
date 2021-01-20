@@ -1,7 +1,8 @@
-package genie
+package init
 
 import (
 	"fmt"
+	"github.com/dk-lockdown/kubegenie/pkg/genie"
 	"regexp"
 	"strings"
 )
@@ -14,7 +15,14 @@ import (
 	"github.com/dk-lockdown/kubegenie/app/api/v1alpha1"
 )
 
-func initMaster0(master0 Node, config *v1alpha1.InitConfiguration) error {
+var (
+	clusterStatus = map[string]string{
+		"joinMasterCmd": "",
+		"joinWorkerCmd": "",
+	}
+)
+
+func InitMaster0(master0 genie.Node, config *v1alpha1.InitConfiguration) error {
 	for i := 0; i < 3; i++ {
 		err2 := master0.SSHCommand.ExecShell("sudo -E /bin/sh -c \"/usr/local/bin/kubeadm init --config=/etc/kubernetes/kubeadm-config.yaml\"")
 		if err2 != nil {
@@ -34,7 +42,7 @@ func initMaster0(master0 Node, config *v1alpha1.InitConfiguration) error {
 	return nil
 }
 
-func initKubeConfig(master0 Node) error {
+func initKubeConfig(master0 genie.Node) error {
 	createConfigDirCmd := "mkdir -p /root/.kube && mkdir -p $HOME/.kube"
 	getKubeConfigCmd := "cp -f /etc/kubernetes/admin.conf /root/.kube/config"
 	getKubeConfigCmdUsr := "cp -f /etc/kubernetes/admin.conf $HOME/.kube/config"
@@ -48,7 +56,7 @@ func initKubeConfig(master0 Node) error {
 	return nil
 }
 
-func getJoinCmd(master0 Node, config *v1alpha1.InitConfiguration) error {
+func GetJoinCmd(master0 genie.Node, config *v1alpha1.InitConfiguration) error {
 	tokenCreateMasterCmd := "/usr/local/bin/kubeadm token create --print-join-command"
 	output, err2 := master0.SSHCommand.Exec(fmt.Sprintf("sudo -E /bin/sh -c \"%s\"", tokenCreateMasterCmd))
 	if err2 != nil {
@@ -61,7 +69,7 @@ func getJoinCmd(master0 Node, config *v1alpha1.InitConfiguration) error {
 	return nil
 }
 
-func getJoinCPCmd(master0 Node, config *v1alpha1.InitConfiguration) error {
+func GetJoinCPCmd(master0 genie.Node, config *v1alpha1.InitConfiguration) error {
 	uploadCertsCmd := "/usr/local/bin/kubeadm init phase upload-certs --upload-certs"
 	output, err := master0.SSHCommand.Exec(fmt.Sprintf("sudo -E /bin/sh -c \"%s\"", uploadCertsCmd))
 	if err != nil {
@@ -70,13 +78,13 @@ func getJoinCPCmd(master0 Node, config *v1alpha1.InitConfiguration) error {
 	reg := regexp.MustCompile("[0-9|a-z]{64}")
 	certificateKey := reg.FindAllString(string(output), -1)[0]
 
-	getJoinCmd(master0, config)
+	GetJoinCmd(master0, config)
 	clusterStatus["joinMasterCmd"] = fmt.Sprintf("%s --control-plane --certificate-key %s", clusterStatus["joinWorkerCmd"], certificateKey)
 
 	return nil
 }
 
-func joinMaster(master Node, config *v1alpha1.InitConfiguration) error {
+func JoinMaster(master genie.Node, config *v1alpha1.InitConfiguration) error {
 	for i := 0; i < 3; i++ {
 		err := master.SSHCommand.ExecShell(fmt.Sprintf("sudo -E /bin/sh -c \"%s\"", clusterStatus["joinMasterCmd"]))
 		if err != nil {
@@ -95,7 +103,7 @@ func joinMaster(master Node, config *v1alpha1.InitConfiguration) error {
 	}
 	return nil
 }
-func joinWorker(node Node, config *v1alpha1.InitConfiguration) error {
+func JoinWorker(node genie.Node, config *v1alpha1.InitConfiguration) error {
 	for i := 0; i < 3; i++ {
 		err := node.SSHCommand.ExecShell(fmt.Sprintf("sudo -E /bin/sh -c \"%s\"", clusterStatus["joinWorkerCmd"]))
 		if err != nil {
@@ -110,28 +118,4 @@ func joinWorker(node Node, config *v1alpha1.InitConfiguration) error {
 	}
 
 	return nil
-}
-
-func (genie KubeGenie) InitMaster0() {
-	genie.executeOnMaster0(initMaster0)
-}
-
-func (genie KubeGenie) JoinMasters() {
-	genie.executeOnMaster0(getJoinCPCmd)
-	genie.executeOnMastersExceptMaster0(joinMaster)
-}
-
-func (genie KubeGenie) JoinWorkers() {
-	genie.executeOnMaster0(getJoinCmd)
-	genie.executeOnWorkerNodes(joinWorker)
-}
-
-func (genie KubeGenie) InitMasters() {
-	genie.InitMaster0()
-	genie.JoinMasters()
-}
-
-func (genie KubeGenie) InitCluster() {
-	genie.InitMasters()
-	genie.JoinWorkers()
 }

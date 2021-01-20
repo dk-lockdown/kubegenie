@@ -21,7 +21,7 @@ func TestTest(t *testing.T) {
 
 var _ = Describe("genie start", func() {
 	var (
-		installer = genie.NewKubeGenie(
+		genie = genie.NewKubeGenie(
 			&v1alpha1.InitConfiguration{
 				Masters: []string{"10.0.2.5"},
 				SSHAuth: v1alpha1.SSHAuthConfiguration{
@@ -48,21 +48,18 @@ var _ = Describe("genie start", func() {
 			})
 	)
 	It("init os", func() {
-		installer.InitOS()
+		genie.InitOS()
 	})
 	It("genie docker", func() {
-		installer.InstallDocker()
+		genie.InstallDocker()
 	})
 	It("genie kubeadm config", func() {
-		installer.InitKubeadmConfig()
+		genie.InitKubeadmConfig()
 	})
 	It("init kubelet", func() {
-		installer.InitKubelet()
+		genie.InitKubelet()
 	})
 	It("init cluster", func() {
-		installer.InitCluster()
-	})
-	It("init calico", func() {
-		installer.InitCalico()
+		genie.InitCluster()
 	})
 })
