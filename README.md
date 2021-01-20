@@ -8,7 +8,7 @@ https://kubernetes-release.pek3b.qingstor.com/release/${RELEASE}/bin/linux/${ARC
 .
 +-- kubernetes  
 |   +-- ${version}  
-|   |   +-- ${arch}
+|   |   +-- ${arch}  
 |   |   |   +-- kubeadm  
 |   |   |   +-- kubelet  
 |   |   |   +-- kubectl  
