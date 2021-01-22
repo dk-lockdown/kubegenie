@@ -1,58 +1,84 @@
 package genie
 
 import (
-	"github.com/dk-lockdown/kubegenie/pkg/genie/init"
-	"github.com/dk-lockdown/kubegenie/pkg/genie/options"
+	"fmt"
+	"github.com/dk-lockdown/kubegenie/pkg/options"
+	"github.com/dk-lockdown/kubegenie/pkg/util/exec"
+	"github.com/dk-lockdown/kubegenie/pkg/util/log"
+	"os"
+	"path/filepath"
 )
 
-func (genie KubeGenie) InitOS() {
-	genie.executeOnAllNodes(init.InitOS)
+func (genie *KubeGenie) InitOS() {
+	genie.executeOnAllNodes(initOS)
 }
 
-func (genie KubeGenie) InstallDocker() {
-	genie.executeOnAllNodes(init.InstallDocker)
+func (genie *KubeGenie) InitPackage() {
+	if genie.config.PkgPath != "" {
+		pp, err := filepath.Abs(genie.config.PkgPath)
+		if err != nil {
+			log.Error(err)
+			return
+		}
+		if _, err := os.Stat(pp); err != nil {
+			log.Error(err)
+			return
+		}
+
+		_, err = exec.Exec("/bin/bash", "-c", fmt.Sprintf("tar -zxvf %s", pp))
+		if err != nil {
+			log.Error(err)
+			return
+		}
+
+		genie.executeOnAllNodes(copyBinaries)
+		genie.executeOnAllNodes(copyPackages)
+	}
 }
 
-func (genie KubeGenie) InitKubelet() {
-	genie.executeOnAllNodes(init.InitKubelet)
+func (genie *KubeGenie) InstallDocker() {
+	genie.executeOnAllNodes(installDocker)
 }
 
-func (genie KubeGenie) InitKubeadmConfig() {
-	genie.executeOnMaster0(init.InitKubeadmConfig)
+func (genie *KubeGenie) InitKubelet() {
+	genie.executeOnAllNodes(initKubelet)
 }
 
-
-func (genie KubeGenie) InitMaster0() {
-	genie.executeOnMaster0(init.InitMaster0)
+func (genie *KubeGenie) InitKubeadmConfig() {
+	genie.executeOnMaster0(initKubeadmConfig)
 }
 
-func (genie KubeGenie) JoinMasters() {
-	genie.executeOnMaster0(init.GetJoinCPCmd)
-	genie.executeOnMastersExceptMaster0(init.JoinMaster)
+func (genie *KubeGenie) InitMaster0() {
+	genie.executeOnMaster0(initMaster0)
 }
 
-func (genie KubeGenie) JoinWorkers() {
-	genie.executeOnMaster0(init.GetJoinCmd)
-	genie.executeOnWorkerNodes(init.JoinWorker)
+func (genie *KubeGenie) JoinMasters() {
+	genie.executeOnMaster0(getJoinCPCmd)
+	genie.executeOnMastersExceptMaster0(joinMaster)
 }
 
-func (genie KubeGenie) InitMasters() {
+func (genie *KubeGenie) JoinWorkers() {
+	genie.executeOnMaster0(getJoinCmd)
+	genie.executeOnWorkerNodes(joinWorker)
+}
+
+func (genie *KubeGenie) InitMasters() {
 	genie.InitMaster0()
 	genie.JoinMasters()
 }
 
-func (genie KubeGenie) InitCluster() {
+func (genie *KubeGenie) InitCluster() {
 	genie.InitMasters()
 	genie.JoinWorkers()
 }
 
-func (genie KubeGenie) InitCalico() {
-	genie.executeOnMaster0(init.InitCalico)
+func (genie *KubeGenie) InitCalico() {
+	genie.executeOnMaster0(initCalico)
 }
 
 func NewInitOSPhase() Phase {
 	return Phase{
-		Name:    "initOS",
+		Name: "initOS",
 		Run: func(genie *KubeGenie) error {
 			genie.InitOS()
 			return nil
@@ -63,9 +89,22 @@ func NewInitOSPhase() Phase {
 	}
 }
 
+func NewInitPackagePhase() Phase {
+	return Phase{
+		Name: "initPackage",
+		Run: func(genie *KubeGenie) error {
+			genie.InitPackage()
+			return nil
+		},
+		InheritFlags: []string{
+			options.CfgPath,
+		},
+	}
+}
+
 func NewInstallDockerPhase() Phase {
 	return Phase{
-		Name:    "installDocker",
+		Name: "installDocker",
 		Run: func(genie *KubeGenie) error {
 			genie.InstallDocker()
 			return nil
@@ -78,7 +117,7 @@ func NewInstallDockerPhase() Phase {
 
 func NewInitKubeletPhase() Phase {
 	return Phase{
-		Name:    "initKubelet",
+		Name: "initKubelet",
 		Run: func(genie *KubeGenie) error {
 			genie.InitKubelet()
 			return nil
@@ -91,7 +130,7 @@ func NewInitKubeletPhase() Phase {
 
 func NewInitKubeadmConfigPhase() Phase {
 	return Phase{
-		Name:    "initKubeadmConfig",
+		Name: "initKubeadmConfig",
 		Run: func(genie *KubeGenie) error {
 			genie.InitKubeadmConfig()
 			return nil
@@ -104,7 +143,7 @@ func NewInitKubeadmConfigPhase() Phase {
 
 func NewInitMaster0Phase() Phase {
 	return Phase{
-		Name:    "initMaster0",
+		Name: "initMaster0",
 		Run: func(genie *KubeGenie) error {
 			genie.InitMaster0()
 			return nil
@@ -117,7 +156,7 @@ func NewInitMaster0Phase() Phase {
 
 func NewJoinMastersPhase() Phase {
 	return Phase{
-		Name:    "joinMasters",
+		Name: "joinMasters",
 		Run: func(genie *KubeGenie) error {
 			genie.JoinMasters()
 			return nil
@@ -130,7 +169,7 @@ func NewJoinMastersPhase() Phase {
 
 func NewJoinWorkersPhase() Phase {
 	return Phase{
-		Name:    "joinWorkers",
+		Name: "joinWorkers",
 		Run: func(genie *KubeGenie) error {
 			genie.JoinWorkers()
 			return nil
@@ -143,7 +182,7 @@ func NewJoinWorkersPhase() Phase {
 
 func NewInitMastersPhase() Phase {
 	return Phase{
-		Name:    "InitMasters",
+		Name: "InitMasters",
 		Run: func(genie *KubeGenie) error {
 			genie.InitMasters()
 			return nil
@@ -156,7 +195,7 @@ func NewInitMastersPhase() Phase {
 
 func NewInitClusterPhase() Phase {
 	return Phase{
-		Name:    "initCluster",
+		Name: "initCluster",
 		Run: func(genie *KubeGenie) error {
 			genie.InitCluster()
 			return nil
@@ -169,7 +208,7 @@ func NewInitClusterPhase() Phase {
 
 func NewInitCalicoPhase() Phase {
 	return Phase{
-		Name:    "initCalico",
+		Name: "initCalico",
 		Run: func(genie *KubeGenie) error {
 			genie.InitCalico()
 			return nil

@@ -1,9 +1,8 @@
-package init
+package genie
 
 import (
 	"encoding/base64"
 	"fmt"
-	"github.com/dk-lockdown/kubegenie/pkg/genie"
 	"strings"
 )
 
@@ -21,7 +20,7 @@ func generateKubeletService() (string, error) {
 	return util.Render(tmpl.KubeletServiceTmpl, util.Data{})
 }
 
-func generateKubeletEnv(node genie.Node) (string, error) {
+func generateKubeletEnv(node Node) (string, error) {
 	output, err := node.SSHCommand.Exec("hostname")
 	if err != nil {
 		return "", err
@@ -34,7 +33,7 @@ func generateKubeletEnv(node genie.Node) (string, error) {
 	})
 }
 
-func InitKubelet(node genie.Node, config *v1alpha1.InitConfiguration) error {
+func initKubelet(node Node, config *v1alpha1.InitConfiguration) error {
 	kubeletService, err := generateKubeletService()
 	if err != nil {
 		return err

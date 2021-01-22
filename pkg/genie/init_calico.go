@@ -1,8 +1,7 @@
-package init
+package genie
 
 import (
 	"github.com/dk-lockdown/kubegenie/app/api/v1alpha1"
-	"github.com/dk-lockdown/kubegenie/pkg/genie"
 	"github.com/dk-lockdown/kubegenie/pkg/tmpl"
 	"github.com/dk-lockdown/kubegenie/pkg/util"
 )
@@ -16,7 +15,7 @@ func generateCalicoYaml(config *v1alpha1.InitConfiguration) (string, error) {
 	})
 }
 
-func InitCalico(master0 genie.Node, config *v1alpha1.InitConfiguration) error {
+func initCalico(master0 Node, config *v1alpha1.InitConfiguration) error {
 	calicoYaml, err := generateCalicoYaml(config)
 	if err != nil {
 		return err

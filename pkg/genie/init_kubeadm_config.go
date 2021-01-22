@@ -1,9 +1,8 @@
-package init
+package genie
 
 import (
 	"encoding/base64"
 	"fmt"
-	"github.com/dk-lockdown/kubegenie/pkg/genie"
 )
 
 import (
@@ -34,7 +33,7 @@ func generateKubeadmConfig(config *v1alpha1.InitConfiguration) (string, error) {
 	})
 }
 
-func InitKubeadmConfig(node genie.Node, config *v1alpha1.InitConfiguration) error {
+func initKubeadmConfig(node Node, config *v1alpha1.InitConfiguration) error {
 	kubeadmCfg, err := generateKubeadmConfig(config)
 	if err != nil {
 		return err

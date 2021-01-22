@@ -3,9 +3,11 @@ package sshutil
 import (
 	"bufio"
 	"fmt"
+	"github.com/tmc/scp"
 	"io"
 	"io/ioutil"
 	"os"
+	"path"
 	"sync"
 	"time"
 )
@@ -13,7 +15,6 @@ import (
 import (
 	"github.com/pkg/errors"
 	"github.com/pkg/sftp"
-	"github.com/tmc/scp"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -231,11 +232,74 @@ func (cmd *SSHCommand) sftp() (*sftp.Client, error) {
 
 func (cmd *SSHCommand) Scp(src, dst string) error {
 	session, err := cmd.sshClient.NewSession()
-
+	if err != nil {
+		return nil
+	}
+	defer session.Close()
 	err = scp.CopyPath(src, dst, session)
 	if err != nil {
 		return err
 	}
 
+	return nil
+}
+
+func (cmd *SSHCommand) Copy(src, dst string) error {
+	si, err := os.Stat(src)
+	if err != nil {
+		return err
+	}
+	if si.IsDir() {
+		return cmd.CopyDir(src, dst)
+	} else {
+		return cmd.CopyFile(src, dst)
+	}
+}
+
+func (cmd *SSHCommand) CopyFile(src, dst string) error {
+	srcFile, err := os.Open(src)
+	if err != nil {
+		return err
+	}
+	defer srcFile.Close()
+
+	dstFile, err := cmd.sftpClient.Create(dst)
+	if err != nil {
+		return err
+	}
+	defer dstFile.Close()
+
+	buf := make([]byte, 1024)
+	for {
+		n, _ := srcFile.Read(buf)
+		if n == 0 {
+			break
+		}
+		dstFile.Write(buf[0:n])
+	}
+	return nil
+}
+
+func (cmd *SSHCommand) CopyDir(src, dst string) error {
+	files, err := ioutil.ReadDir(src)
+	if err != nil {
+		return err
+	}
+	cmd.sftpClient.MkdirAll(dst)
+	for _, file := range files {
+		lfp := path.Join(src, file.Name())
+		rfp := path.Join(dst, file.Name())
+		if file.IsDir() {
+			err := cmd.CopyDir(lfp, rfp)
+			if err != nil {
+				return err
+			}
+		} else {
+			err := cmd.CopyFile(lfp, rfp)
+			if err != nil {
+				return err
+			}
+		}
+	}
 	return nil
 }

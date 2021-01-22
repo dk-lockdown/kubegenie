@@ -14,7 +14,7 @@ import (
 import (
 	"github.com/dk-lockdown/kubegenie/app/api/v1alpha1"
 	"github.com/dk-lockdown/kubegenie/pkg/genie"
-	"github.com/dk-lockdown/kubegenie/pkg/genie/options"
+	"github.com/dk-lockdown/kubegenie/pkg/options"
 )
 
 type startOptions struct {
@@ -25,6 +25,7 @@ func NewStartCmd() *cobra.Command {
 	initRunner := genie.NewRunner()
 
 	initRunner.AppendPhase(genie.NewInitOSPhase())
+	initRunner.AppendPhase(genie.NewInitPackagePhase())
 	initRunner.AppendPhase(genie.NewInstallDockerPhase())
 	initRunner.AppendPhase(genie.NewInitKubeletPhase())
 	initRunner.AppendPhase(genie.NewInitKubeadmConfigPhase())

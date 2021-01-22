@@ -1,9 +1,8 @@
-package init
+package genie
 
 import (
 	"encoding/base64"
 	"fmt"
-	"github.com/dk-lockdown/kubegenie/pkg/genie"
 	"strings"
 )
 
@@ -36,7 +35,7 @@ func generateDockerDaemonJsonConfig(config *v1alpha1.InitConfiguration) (string,
 	})
 }
 
-func InstallDocker(node genie.Node, config *v1alpha1.InitConfiguration) error {
+func installDocker(node Node, config *v1alpha1.InitConfiguration) error {
 	if err := node.SSHCommand.ExecShell(shell.DockerInstallShell); err != nil {
 		return err
 	}

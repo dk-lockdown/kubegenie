@@ -13,7 +13,7 @@ https://kubernetes-release.pek3b.qingstor.com/release/${RELEASE}/bin/linux/${ARC
 |   |   |   +-- kubelet  
 |   |   |   +-- kubectl  
 +-- lib
-|   +-- rpm
+|   +-- rpms
 |   |   +-- containerd.io.rpm  
 |   |   +-- docker-ce.rpm
 |   |   +-- docker-ce-cli.rpm  

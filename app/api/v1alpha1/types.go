@@ -21,7 +21,7 @@ type InitConfiguration struct {
 
 	Registries Registries
 
-	PkgUrl string
+	PkgPath string
 }
 
 // SSHAuthConfiguration ...
