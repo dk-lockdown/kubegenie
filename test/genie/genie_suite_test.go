@@ -29,7 +29,7 @@ var _ = Describe("genie start", func() {
 					Password: "123456",
 				},
 				Kubernetes: v1alpha1.Kubernetes{
-					Version:           "v1.19.0",
+					Version:           "v1.20.0",
 					ApiServerAddress:  "10.0.2.5",
 					APIServerCertSANs: nil,
 					NodeCidrMaskSize:  24,
@@ -40,15 +40,23 @@ var _ = Describe("genie start", func() {
 					ServiceCIDR: "192.168.0.1/16",
 					DNSDomain:   "cluster.local",
 					Calico: v1alpha1.Calico{
+						Version:  "v3.8.2",
 						IPIPMode: "Always",
 						VethMTU:  1440,
 					},
 				},
+				//Registries: v1alpha1.Registries{
+				//	PrivateRegistry: options.KubeGenieRegistry,
+				//},
 				VIP: "10.0.0.255",
+				//PkgPath: "/Volumes/新加卷/package",
 			})
 	)
 	It("init os", func() {
 		genie.InitOS()
+	})
+	It("init package", func() {
+		genie.InitPackage()
 	})
 	It("genie docker", func() {
 		genie.InstallDocker()
@@ -61,5 +69,8 @@ var _ = Describe("genie start", func() {
 	})
 	It("init cluster", func() {
 		genie.InitCluster()
+	})
+	It("init calico", func() {
+		genie.InitCalico()
 	})
 })

@@ -43,6 +43,9 @@ func NewStartCmd() *cobra.Command {
 		if err != nil {
 			return nil, err
 		}
+		if initConfiguration.PkgPath != "" {
+			initConfiguration.Registries.PrivateRegistry = options.KubeGenieRegistry
+		}
 		kubeGenie := genie.NewKubeGenie(initConfiguration)
 		return kubeGenie, nil
 	})

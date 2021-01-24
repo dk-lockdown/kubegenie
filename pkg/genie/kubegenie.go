@@ -31,10 +31,10 @@ func NewKubeGenie(config *v1alpha1.InitConfiguration) *KubeGenie {
 
 	masters := make([]Node, 0, len(config.Masters))
 	workers := make([]Node, 0, len(config.Workers))
-	for _, master := range config.Masters {
+	for i := 0; i < len(config.Masters); i++ {
 		masters = append(masters, Node{
-			Host: master,
-			SSHCommand: sshutil.New(master,
+			Host: config.Masters[i],
+			SSHCommand: sshutil.New(config.Masters[i],
 				config.SSHAuth.Username,
 				config.SSHAuth.Password,
 				config.SSHAuth.PrivateKeyPath,
@@ -42,10 +42,10 @@ func NewKubeGenie(config *v1alpha1.InitConfiguration) *KubeGenie {
 		})
 	}
 
-	for _, node := range config.Workers {
+	for n := 0; n < len(config.Workers); n++ {
 		masters = append(workers, Node{
-			Host: node,
-			SSHCommand: sshutil.New(node,
+			Host: config.Workers[n],
+			SSHCommand: sshutil.New(config.Workers[n],
 				config.SSHAuth.Username,
 				config.SSHAuth.Password,
 				config.SSHAuth.PrivateKeyPath,
@@ -120,6 +120,7 @@ func (genie *KubeGenie) executeTask(wg *sync.WaitGroup, node Node, task Task) {
 		defer wg.Done()
 	}
 	if err := task(node, genie.config); err != nil {
+
 		log.Error(err)
 	}
 }

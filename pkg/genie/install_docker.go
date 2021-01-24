@@ -36,8 +36,10 @@ func generateDockerDaemonJsonConfig(config *v1alpha1.InitConfiguration) (string,
 }
 
 func installDocker(node Node, config *v1alpha1.InitConfiguration) error {
-	if err := node.SSHCommand.ExecShell(shell.DockerInstallShell); err != nil {
-		return err
+	if config.PkgPath == "" {
+		if err := node.SSHCommand.ExecShell(shell.DockerInstallShell); err != nil {
+			return err
+		}
 	}
 	dockerDaemonJson, err := generateDockerDaemonJsonConfig(config)
 	if err != nil {

@@ -62,6 +62,7 @@ type Networking struct {
 
 // Calico ...
 type Calico struct {
+	Version  string
 	IPIPMode string
 	VethMTU  int
 }

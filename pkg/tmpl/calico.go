@@ -526,7 +526,7 @@ spec:
         # It can be deleted if this is a fresh installation, or if you have already
         # upgraded to use calico-ipam.
         - name: upgrade-ipam
-          image: {{ .PrivateRegistry }}/calico/cni:v3.8.9
+          image: {{ .PrivateRegistry }}/calico/cni:{{ .Version }}
           command: ["/opt/cni/bin/calico-ipam", "-upgrade"]
           env:
             - name: KUBERNETES_NODE_NAME
@@ -547,9 +547,9 @@ spec:
             privileged: true
         # This container installs the CNI binaries
         # and CNI network config file on each node.
-        - name: genie-cni
-          image: {{ .PrivateRegistry }}/calico/cni:v3.8.9
-          command: ["/genie-cni.sh"]
+        - name: install-cni
+          image: {{ .PrivateRegistry }}/calico/cni:{{ .Version }}
+          command: ["/install-cni.sh"]
           env:
             # Name of the CNI config file to create.
             - name: CNI_CONF_NAME
@@ -584,7 +584,7 @@ spec:
         # Adds a Flex Volume Driver that creates a per-pod Unix Domain Socket to allow Dikastes
         # to communicate with Felix over the Policy Sync API.
         - name: flexvol-driver
-          image: {{ .PrivateRegistry }}/calico/pod2daemon-flexvol:v3.8.9
+          image: {{ .PrivateRegistry }}/calico/pod2daemon-flexvol:{{ .Version }}
           volumeMounts:
           - name: flexvol-driver-host
             mountPath: /host/driver
@@ -595,7 +595,7 @@ spec:
         # container programs network policy and routes on each
         # host.
         - name: calico-node
-          image: {{ .PrivateRegistry }}/calico/node:v3.8.9
+          image: {{ .PrivateRegistry }}/calico/node:{{ .Version }}
           env:
             # Use Kubernetes API as the backing datastore.
             - name: DATASTORE_TYPE
@@ -770,7 +770,7 @@ spec:
       priorityClassName: system-cluster-critical
       containers:
         - name: calico-kube-controllers
-          image: {{ .PrivateRegistry }}/calico/kube-controllers:v3.8.9
+          image: {{ .PrivateRegistry }}/calico/kube-controllers:{{ .Version }}
           env:
             # Choose which controllers to run.
             - name: ENABLED_CONTROLLERS

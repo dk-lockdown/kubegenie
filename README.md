@@ -12,7 +12,7 @@ https://kubernetes-release.pek3b.qingstor.com/release/${RELEASE}/bin/linux/${ARC
 |   |   |   +-- kubeadm  
 |   |   |   +-- kubelet  
 |   |   |   +-- kubectl  
-+-- lib
++-- libs
 |   +-- rpms
 |   |   +-- containerd.io.rpm  
 |   |   +-- docker-ce.rpm
@@ -27,3 +27,4 @@ https://kubernetes-release.pek3b.qingstor.com/release/${RELEASE}/bin/linux/${ARC
 |   |   |   +-- k8s.gcr.io/pause:3.2  
 |   |   |   +-- k8s.gcr.io/etcd:3.4.9-1  
 |   |   |   +-- k8s.gcr.io/coredns:1.7.0  
+|   |   |   +-- push-images.sh    

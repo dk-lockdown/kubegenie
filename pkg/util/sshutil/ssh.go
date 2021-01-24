@@ -3,7 +3,6 @@ package sshutil
 import (
 	"bufio"
 	"fmt"
-	"github.com/tmc/scp"
 	"io"
 	"io/ioutil"
 	"os"
@@ -15,6 +14,7 @@ import (
 import (
 	"github.com/pkg/errors"
 	"github.com/pkg/sftp"
+	"github.com/tmc/scp"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -257,6 +257,7 @@ func (cmd *SSHCommand) Copy(src, dst string) error {
 }
 
 func (cmd *SSHCommand) CopyFile(src, dst string) error {
+	log.Infof(fmt.Sprintf("copy file from %s to %s", src, dst))
 	srcFile, err := os.Open(src)
 	if err != nil {
 		return err
@@ -269,7 +270,7 @@ func (cmd *SSHCommand) CopyFile(src, dst string) error {
 	}
 	defer dstFile.Close()
 
-	buf := make([]byte, 1024)
+	buf := make([]byte, 1024*1024)
 	for {
 		n, _ := srcFile.Read(buf)
 		if n == 0 {

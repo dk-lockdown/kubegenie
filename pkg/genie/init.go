@@ -1,12 +1,8 @@
 package genie
 
 import (
-	"fmt"
 	"github.com/dk-lockdown/kubegenie/pkg/options"
-	"github.com/dk-lockdown/kubegenie/pkg/util/exec"
 	"github.com/dk-lockdown/kubegenie/pkg/util/log"
-	"os"
-	"path/filepath"
 )
 
 func (genie *KubeGenie) InitOS() {
@@ -15,24 +11,22 @@ func (genie *KubeGenie) InitOS() {
 
 func (genie *KubeGenie) InitPackage() {
 	if genie.config.PkgPath != "" {
-		pp, err := filepath.Abs(genie.config.PkgPath)
-		if err != nil {
-			log.Error(err)
-			return
-		}
-		if _, err := os.Stat(pp); err != nil {
-			log.Error(err)
-			return
-		}
-
-		_, err = exec.Exec("/bin/bash", "-c", fmt.Sprintf("tar -zxvf %s", pp))
-		if err != nil {
-			log.Error(err)
-			return
-		}
+		unzip(genie.config.PkgPath)
 
 		genie.executeOnAllNodes(copyBinaries)
 		genie.executeOnAllNodes(copyPackages)
+		genie.executeOnMaster0(copyImagesOnMaster0)
+		genie.executeOnAllNodes(initImagesRepo)
+		genie.executeOnMaster0(pushImagesOnMaster0)
+	} else {
+		pkgPath, err := downloadBinaries(genie.config.Kubernetes.Version)
+		if err != nil {
+			log.Error(err)
+			return
+		}
+		genie.config.PkgPath = pkgPath
+		genie.executeOnAllNodes(copyBinaries)
+		genie.config.PkgPath = ""
 	}
 }
 
