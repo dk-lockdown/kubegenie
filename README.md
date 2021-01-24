@@ -87,5 +87,4 @@ kubegenie start --config [configpath]
 ```
 
 #### kubernetes v1.20.0 离线包
-
-线包链接：https://pan.baidu.com/s/1bdKFSiah2xihFyTGnf9Spg 提取码: db3q
+离线包链接：https://pan.baidu.com/s/1bdKFSiah2xihFyTGnf9Spg 提取码: db3q
