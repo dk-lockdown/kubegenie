@@ -3,6 +3,9 @@ package genie
 import (
 	"encoding/base64"
 	"fmt"
+)
+
+import (
 	"github.com/dk-lockdown/kubegenie/app/api/v1alpha1"
 	"github.com/dk-lockdown/kubegenie/pkg/tmpl"
 	"github.com/dk-lockdown/kubegenie/pkg/util"

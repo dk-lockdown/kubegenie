@@ -2,7 +2,6 @@ package exec
 
 import (
 	"bufio"
-	"github.com/dk-lockdown/kubegenie/pkg/util/runtime"
 	"github.com/pkg/errors"
 	"io"
 	"os/exec"
@@ -11,6 +10,7 @@ import (
 
 import (
 	"github.com/dk-lockdown/kubegenie/pkg/util/log"
+	"github.com/dk-lockdown/kubegenie/pkg/util/runtime"
 )
 
 func Exec(command string, args ...string) ([]byte, error) {
