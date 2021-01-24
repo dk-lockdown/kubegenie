@@ -17,8 +17,8 @@ https://kubernetes-release.pek3b.qingstor.com/release/${RELEASE}/bin/linux/${ARC
 |   |   +-- containerd.io.rpm  
 |   |   +-- docker-ce.rpm
 |   |   +-- docker-ce-cli.rpm  
-+-- images
-|   +-- kubernetes
++-- images  
+|   +-- kubernetes  
 |   |   +-- ${version}  
 |   |   |   +-- k8s.gcr.io/kube-apiserver:v1.19.0  
 |   |   |   +-- k8s.gcr.io/kube-controller-manager:v1.19.0   

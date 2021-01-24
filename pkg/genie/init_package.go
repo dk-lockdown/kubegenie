@@ -129,7 +129,7 @@ func copyImagesOnMaster0(node Node, config *v1alpha1.InitConfiguration) error {
 	if !si.IsDir() {
 		pp = filepath.Dir(config.PkgPath)
 	}
-	err = node.SSHCommand.Copy(fmt.Sprintf("%s/images", pp), "/tmp/images")
+	err = node.SSHCommand.Copy(fmt.Sprintf("%s/images/kubernetes/%s", pp, config.Kubernetes.Version), "/tmp/images")
 	if err != nil {
 		return err
 	}
