@@ -41,36 +41,36 @@ type Kubernetes struct {
 	// ControlPlaneEndpoint ClusterConfiguration.ControlPlaneEndpoint.Address
 	APIServerAddress string `yaml:"apiServerAddress"`
 	// APIServerCertSANs ClusterConfiguration.APIServer.CertSANs
-	APIServerCertSANs []string `yaml:apiServerCertSANs"`
+	APIServerCertSANs []string `yaml:"apiServerCertSANs"`
 	// NodeCidrMaskSize ClusterConfiguration.ControllerManager.ExtraArgs
-	NodeCidrMaskSize int `yaml:nodeCidrMaskSize"`
+	NodeCidrMaskSize int `yaml:"nodeCidrMaskSize"`
 	// MaxPods KubeletConfiguration.MaxPods
-	MaxPods int `yaml:maxPods"`
+	MaxPods int `yaml:"maxPods"`
 }
 
 // Networking ClusterConfiguration.Networking
 type Networking struct {
 	// PodCIDR ClusterConfiguration.Networking.PodSubnet
-	PodCIDR string `yaml:podCIDR"`
+	PodCIDR string `yaml:"podCIDR"`
 	// ServiceCIDR ClusterConfiguration.Networking.ServiceSubnet
-	ServiceCIDR string `yaml:serviceCIDR"`
+	ServiceCIDR string `yaml:"serviceCIDR"`
 	// DNSDomain ClusterConfiguration.Networking.DNSDomain
-	DNSDomain string `yaml:dnsDomain"`
+	DNSDomain string `yaml:"dnsDomain"`
 	// Calico
-	Calico Calico `yaml:calico"`
+	Calico Calico `yaml:"calico"`
 }
 
 // Calico ...
 type Calico struct {
-	Version  string `yaml:version"`
-	IPIPMode string `yaml:ipipMode"`
-	VethMTU  int    `yaml:vethMTU"`
+	Version  string `yaml:"version"`
+	IPIPMode string `yaml:"ipipMode"`
+	VethMTU  int    `yaml:"vethMTU"`
 }
 
 type Registries struct {
-	RegistryMirrors    []string `yaml:registryMirrors"`
-	InsecureRegistries []string `yaml:insecureRegistries"`
-	PrivateRegistry    string   `yaml:privateRegistry"`
+	RegistryMirrors    []string `yaml:"registryMirrors"`
+	InsecureRegistries []string `yaml:"insecureRegistries"`
+	PrivateRegistry    string   `yaml:"privateRegistry"`
 }
 
 func (cfg *InitConfiguration) GenerateCertSANs() []string {

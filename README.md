@@ -33,23 +33,6 @@ https://kubernetes-release.pek3b.qingstor.com/release/${RELEASE}/bin/linux/${ARC
 ```
 kind: ""
 apiversion: ""
-metadata:
-    name: ""
-    generatename: ""
-    namespace: ""
-    selflink: ""
-    uid: ""
-    resourceversion: ""
-    generation: 0
-    creationtimestamp: "0001-01-01T00:00:00Z"
-    deletiontimestamp: null
-    deletiongraceperiodseconds: null
-    labels: {}
-    annotations: {}
-    ownerreferences: []
-    finalizers: []
-    clustername: ""
-    managedfields: []
 masters:
   - 10.0.2.5
 workers: []
@@ -62,22 +45,22 @@ kubernetes:
     version: v1.20.0
     imageRepo: ""
     apiServerAddress: 10.0.2.5
-    apiservercertsans: []
-    nodecidrmasksize: 24
-    maxpods: 110
+    apiServerCertSANs: []
+    nodeCidrMaskSize: 24
+    maxPods: 110
 network:
-    podcidr: 172.16.0.1/16
-    servicecidr: 192.168.0.1/16
-    dnsdomain: cluster.local
+    podCIDR: 172.16.0.1/16
+    serviceCIDR: 192.168.0.1/16
+    dnsDomain: cluster.local
     calico:
         version: v3.8.2
-        ipipmode: Always
-        vethmtu: 1440
+        ipipMode: Always
+        vethMTU: 1440
 vip: 10.0.0.255
 registries:
-    registrymirrors: []
-    insecureregistries: []
-    privateregistry: ""
+    registryMirrors: []
+    insecureRegistries: []
+    privateRegistry: ""
 pkgPath: ""
 ```
 
