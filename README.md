@@ -69,5 +69,32 @@ pkgPath: ""
 kubegenie start --config [configpath]
 ```
 
+kubegenie 将安装步骤解耦，每一步都可以单独执行，不熟悉安装步骤的初学者可以一步一步执行去理解安装过程：
+```
+# kubegenie start phase -h
+Use this command to invoke single phase of the start workflow
+
+Usage:
+  kubegenie start phase [command]
+
+Available Commands:       
+  initos          
+  initpackage    
+  installdocker  
+  initkubelet      
+  initkubeadmconfig           
+  initmaster0        
+  joinmasters       
+  initmasters       
+  joinworkers    
+  initcluster  
+  initcalico       
+
+Flags:
+  -h, --help   help for phase
+
+Use "kubegenie start phase [command] --help" for more information about a command.
+```
+
 #### kubernetes v1.20.0 离线包
 离线包链接：https://pan.baidu.com/s/1bdKFSiah2xihFyTGnf9Spg 提取码: db3q
