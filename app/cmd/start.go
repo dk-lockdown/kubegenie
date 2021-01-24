@@ -36,9 +36,19 @@ func NewStartCmd() *cobra.Command {
 	initRunner.AppendPhase(genie.NewInitClusterPhase())
 	initRunner.AppendPhase(genie.NewInitCalicoPhase())
 
+	startCmd := &cobra.Command{
+		Use:   "start",
+		Short: "Run this command to create a kubernetes cluster",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			initRunner.Options.SkipPhases = []string{"initmaster0", "joinmasters", "joinworkers", "initmasters"}
+			initRunner.Run(args)
+			return nil
+		},
+	}
+
+	startOptions := &startOptions{}
+	addStartConfigFlags(startCmd.Flags(), startOptions)
 	initRunner.SetDataInitializer(func(cmd *cobra.Command, args []string) (*genie.KubeGenie, error) {
-		startOptions := &startOptions{}
-		addStartConfigFlags(cmd.Flags(), startOptions)
 		initConfiguration, err := loadInitConfigurationFromFile(startOptions.cfgPath)
 		if err != nil {
 			return nil, err
@@ -49,16 +59,6 @@ func NewStartCmd() *cobra.Command {
 		kubeGenie := genie.NewKubeGenie(initConfiguration)
 		return kubeGenie, nil
 	})
-
-	startCmd := &cobra.Command{
-		Use:   "start",
-		Short: "Run this command to create a kubernetes cluster",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			initRunner.Options.FilterPhases = []string{"initMaster0", "joinMasters", "joinWorkers", "initMasters"}
-			initRunner.Run(args)
-			return nil
-		},
-	}
 
 	initRunner.BindToCommand(startCmd)
 

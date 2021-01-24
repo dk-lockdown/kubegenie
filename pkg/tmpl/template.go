@@ -31,7 +31,7 @@ kind: ClusterConfiguration
 imageRepository: {{ .ImageRepo }}
 kubernetesVersion: {{ .Version }}
 certificatesDir: /etc/kubernetes/pki
-controlPlaneEndpoint: {{ .ApiServerAddress }}:6443
+controlPlaneEndpoint: {{ .APIServerAddress }}:6443
 networking:
   dnsDomain: {{ .DNSDomain }}
   podSubnet: {{ .PodCIDR }}

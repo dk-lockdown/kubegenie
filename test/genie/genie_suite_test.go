@@ -30,7 +30,7 @@ var _ = Describe("genie start", func() {
 				},
 				Kubernetes: v1alpha1.Kubernetes{
 					Version:           "v1.20.0",
-					ApiServerAddress:  "10.0.2.5",
+					APIServerAddress:  "10.0.2.5",
 					APIServerCertSANs: nil,
 					NodeCidrMaskSize:  24,
 					MaxPods:           110,

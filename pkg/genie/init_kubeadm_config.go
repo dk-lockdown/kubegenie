@@ -22,7 +22,7 @@ func generateKubeadmConfig(config *v1alpha1.InitConfiguration) (string, error) {
 	return util.Render(tmpl.KubeadmCfgTmpl, util.Data{
 		"ImageRepo":        imageRepo,
 		"Version":          config.Kubernetes.Version,
-		"ApiServerAddress": config.Kubernetes.ApiServerAddress,
+		"APIServerAddress": config.Kubernetes.APIServerAddress,
 		"DNSDomain":        config.Network.DNSDomain,
 		"PodCIDR":          config.Network.PodCIDR,
 		"ServiceCIDR":      config.Network.ServiceCIDR,

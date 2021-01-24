@@ -4,6 +4,7 @@ go 1.15
 
 require (
 	github.com/dominodatalab/os-release v0.0.0-20190522011736-bcdb4a3e3c2f
+	github.com/ghodss/yaml v1.0.0
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
 	github.com/lithammer/dedent v1.1.0
 	github.com/onsi/ginkgo v1.11.0
