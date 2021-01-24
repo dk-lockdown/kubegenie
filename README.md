@@ -97,4 +97,4 @@ Use "kubegenie start phase [command] --help" for more information about a comman
 ```
 
 #### kubernetes v1.20.0 离线包
-离线包链接：https://pan.baidu.com/s/1bdKFSiah2xihFyTGnf9Spg 提取码: db3q
+离线包链接：https://pan.baidu.com/s/17KwtKV_AgYuqq5frk98Ezg 提取码: 3tbt 
